@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "part_1/courseinfo"
+		},
+		{
+			"path": "part_1/pg"
+		},
+		{
+			"path": "part_1/unicafe"
+		},
+		{
+			"path": "part_1/notes"
+		},
+		{
+			"path": "part_1/phonebook"
+		},
+		{
+			"path": "part_1/backend"
+		},
+		{
+			"path": "part_1/phonebook_backend"
+		}
+	],
+	"settings": {}
+}
