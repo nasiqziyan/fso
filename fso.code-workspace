@@ -1,15 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "part_1/courseinfo"
-		},
-		{
-			"path": "part_1/pg"
-		},
-		{
-			"path": "part_1/unicafe"
-		},
-		{
 			"path": "part_1/notes"
 		},
 		{
@@ -20,6 +11,9 @@
 		},
 		{
 			"path": "part_1/phonebook_backend"
+		},
+		{
+			"path": "part_4/bloglist"
 		}
 	],
 	"settings": {}

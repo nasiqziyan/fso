@@ -1,0 +1,12 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5hc2lxIiwiaWQiOiI2OTYyYjU3NDBlNDg2ZWI4MjlhZmQ3ZDMiLCJpYXQiOjE3NjgwODEzNDl9.6fw6z3ItWA42KlQx0xlibJcwugxi7pp2vc54_cZzaNY
+
+{
+  "title": "created with token",
+  "author": "Verified John Doe",
+  "url": "https://example2.com/test-blog",
+  "likes": 12
+}
+
+
