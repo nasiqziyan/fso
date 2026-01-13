@@ -14,6 +14,9 @@
 		},
 		{
 			"path": "part_4/bloglist"
+		},
+		{
+			"path": "part_4/bloglist-frontend"
 		}
 	],
 	"settings": {}
