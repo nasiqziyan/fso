@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Blog from "./components/Blog";
+import BlogForm from "./components/BlogForm";
+import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-import Notification from "./components/Notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -11,10 +13,6 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -28,6 +26,8 @@ const App = () => {
       blogService.setToken(user.token);
     }
   }, []);
+
+  const newBlogRef = useRef(null);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -86,74 +86,58 @@ const App = () => {
     );
   };
 
-  const handleBlogSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const newBlog = await blogService.create({ title, author, url });
-      setBlogs(blogs.concat(newBlog));
-      setSuccessMessage(`Added blog: ${title} by ${author}`);
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-    } catch {
-      setErrorMessage("Unable to upload blog");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    }
-  };
-
-  const addBlog = () => {
+  const blogForm = () => {
     return (
-      <>
-        <form onSubmit={handleBlogSubmit}>
-          <div>
-            <label>
-              title:
-              <input
-                value={title}
-                onChange={({ target }) => setTitle(target.value)}
-              ></input>
-            </label>
-          </div>
-          <div>
-            <label>
-              author:
-              <input
-                value={author}
-                onChange={({ target }) => {
-                  setAuthor(target.value);
-                }}
-              ></input>
-            </label>
-          </div>
-          <div>
-            <label>
-              url:
-              <input
-                value={url}
-                onChange={({ target }) => {
-                  setUrl(target.value);
-                }}
-              ></input>
-            </label>
-            <div>
-              <button type="submit">Create</button>
-            </div>
-          </div>
-        </form>
-      </>
+      <Togglable ref={newBlogRef} buttonLabel="Create new blog">
+        <BlogForm
+          addBlog={addBlog}
+          setErrorMessage={setErrorMessage}
+          setSuccessMessage={setSuccessMessage}
+        />
+      </Togglable>
     );
   };
 
+  const addBlog = (blogObject) => {
+    blogService.create(blogObject).then((returnedBlog) => {
+      setBlogs(blogs.concat(returnedBlog));
+    });
+  };
+
+  const handleLike = (id, updatedBlog) => {
+    setBlogs(blogs.map((b) => (b.id === id ? { ...b, ...updatedBlog } : b)));
+  };
+
+  const handleDelete = async (id) => {
+    const blogToDelete = blogs.find((b) => b.id === id);
+    if (!blogToDelete) return;
+    const confirm = window.confirm(
+      `Remove blog "${blogToDelete.title}" by ${blogToDelete.author}?`,
+    );
+    if (!confirm) return;
+    try {
+      await blogService.remove(id);
+      setBlogs(blogs.filter((b) => b.id !== id));
+      setSuccessMessage(`Deleted blog: ${blogToDelete.title}`);
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch {
+      setErrorMessage("Failed to delete blog");
+      setTimeout(() => setErrorMessage(null), 5000);
+    }
+  };
+
   const blogList = (blogs) => {
+    const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
     return (
       <>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+        {sortedBlogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            onLike={handleLike}
+            onDelete={handleDelete}
+            currentUser={user}
+          />
         ))}
       </>
     );
@@ -174,7 +158,7 @@ const App = () => {
       )}
       {user && (
         <>
-          {addBlog()}
+          {blogForm()}
           {blogList(blogs)}
         </>
       )}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Note from "./components/Note";
 import noteService from "./services/notes";
 import Notification from "./components/Notification";
@@ -15,6 +15,8 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+
+  const noteFormRef = useRef();
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
@@ -49,7 +51,7 @@ const App = () => {
       })
       .catch(() => {
         setErrorMessage(
-          `Note '${note.content}' was already removed from server`
+          `Note '${note.content}' was already removed from server`,
         );
         setTimeout(() => {
           setErrorMessage(null);
@@ -96,7 +98,7 @@ const App = () => {
   );
 
   const noteForm = () => (
-    <Togglable buttonLabel="new note">
+    <Togglable buttonLabel="new note" ref={noteFormRef}>
       {/*NoteForm requires a post service function as a prop*/}
       <NoteForm createNote={addNote} />
     </Togglable>
